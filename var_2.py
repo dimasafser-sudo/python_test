@@ -1,0 +1,109 @@
+# #сравнение ноутбуков по ключевым характеристикам 
+# 
+# Вариант-2 Сафонов Дмитрий УИС-211
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+laptops_by_char = {
+    "Процессор (ГГц)": {
+        "ASUS ROG Strix": 2.6,
+        "Lenovo Legion 5": 3.0,
+        "HP Omen 15": 2.8,
+        "MSI GF65": 2.5
+    },
+    "ОЗУ (ГБ)": {
+        "ASUS ROG Strix": 16,
+        "Lenovo Legion 5": 32,
+        "HP Omen 15": 16,
+        "MSI GF65": 16
+    },
+    "SSD (ГБ)": {
+        "ASUS ROG Strix": 512,
+        "Lenovo Legion 5": 1000,
+        "HP Omen 15": 512,
+        "MSI GF65": 256
+    },
+    "Видеокарта (ГБ)": {
+        "ASUS ROG Strix": 8,
+        "Lenovo Legion 5": 6,
+        "HP Omen 15": 4,
+        "MSI GF65": 6
+    },
+    "Экран (дюймы)": {
+        "ASUS ROG Strix": 15.6,
+        "Lenovo Legion 5": 15.6,
+        "HP Omen 15": 15.6,
+        "MSI GF65": 15.6
+    },
+    "Вес (кг)": {
+        "ASUS ROG Strix": 2.4,
+        "Lenovo Legion 5": 2.7,
+        "HP Omen 15": 2.3,
+        "MSI GF65": 2.1
+    }
+}
+
+models = list(next(iter(laptops_by_char.values())).keys())
+
+name_char = list(laptops_by_char.keys())
+
+char = []
+for model in models:
+    values = []
+    for feature in name_char:
+        values.append(laptops_by_char[feature][model])
+    char.append(values)
+
+
+def get_normal(char):
+    normal = []
+    for item in char:
+        normal.append([a / b for a, b in zip(item, char[0])])
+    return normal
+
+
+def get_quality(normal):
+    result = []
+    for item in normal:
+        result.append(round(sum(item) / len(item), 2))
+    return result
+
+
+def create_bar(name, values):
+    plt.figure(figsize=(10, 6))
+    plt.bar(name, values)
+    plt.xlabel("Модель")
+    plt.ylabel("Kту")
+    plt.title("Сравнение ноутбуков по коэффициенту технического уровня")
+    plt.xticks(rotation=15)
+    plt.show()
+
+
+def create_radial(models, name, values):
+    values = [item[:] + item[:1] for item in values]
+
+    angles = np.linspace(0, 2 * np.pi, len(name), endpoint=False).tolist()
+    angles += angles[:1]
+
+    fig, ax = plt.subplots(figsize=(8, 8), subplot_kw=dict(projection="polar"))
+
+    for i in range(len(values)):
+        ax.plot(angles, values[i], "o-", linewidth=2, label=models[i])
+
+    ax.set_xticks(angles[:-1])
+    ax.set_xticklabels(name, fontsize=10)
+    ax.set_ylim(0, 2)
+
+    ax.legend(loc="upper right", bbox_to_anchor=(1.35, 1.1))
+    plt.title("Сравнение относительных характеристик ноутбуков", pad=20)
+    plt.show()
+
+
+normal_data = get_normal(char)
+quality_data = get_quality(normal_data)
+
+create_bar(models, quality_data)
+create_radial(models, name_char, normal_data)
+
+
